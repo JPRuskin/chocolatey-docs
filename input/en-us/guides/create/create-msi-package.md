@@ -15,11 +15,9 @@ Consequently, they're often appreciated by busy Systems Administrators who want 
 
 ### Using `Install-ChocolateyPackage`
 
-Chocolatey CLI contains a selection of PowerShell functions known as "helper functions", which are available during all Chocolatey scripts.
-
 Chocolatey supports a lot of different types of installer, including MSIs. EXEs, MSIs, and MSUs (all popular install formats) are normally installed using the [`Install-ChocolateyPackage`](#xref:install-chocolateypackage) function - and, in fact, our default template for a new package contains an example of this!
 
-You can inspect the full set of available parameters for this function at the link above, or by opening the script file on your machine - it'll be contained in `%ChocolateyInstall%\helpers\functions`, which you should be able to open in Explorer or VSCode.
+You can inspect the full set of available parameters for this function at the link above.
 
 At the most basic level, though, you can use it by simply passing in a `PackageName` and `URL` (or `URL64`):
 
@@ -32,7 +30,7 @@ $InstallArgs = @{
 Install-ChocolateyPackage @InstallArgs
 ```
 
-> ::Note:: If you hadn't seen it before, `$env:ChocolateyPackageName` is a variable set within Chocolatey scripts to the name of the current package.
+> :choco-info: If you hadn't seen it before, `$env:ChocolateyPackageName` is a variable set within Chocolatey scripts to the name of the current package.
 
 Of course, in a real-world package you would also want to add arguments to ensure the software installed silently, 64-bit install media (if available), and checksums to ensure that the URL you downloaded matched with your expectations (if you weren't going to host the installation media within the package).
 
@@ -42,29 +40,8 @@ We'll dive into the additional options in [Creating your Install Script](#creati
 
 In this example, we're going to be creating a new Firefox MSI package.
 
-> :info: For the purposes of the example, we'll provide URLs that work at time of writing. If you were creating a package from scratch, you would want to find the URLs for the installers yourself.
+> :choco-info: For the purposes of the example, we'll provide URLs that work at time of writing. If you were creating a package from scratch, you would want to find the URLs for the installers yourself.
 > In this case, we browsed to [Mozilla's download site](https://www.mozilla.org/en-GB/firefox/all/#product-desktop-release) and grabbed the URL of the MSI(s) we wanted.
-
-* [Scenario 1 - Using VSCode](xref:howto-create-msi-package#scenario-one)
-* [Scenario 2 - Using PowerShell](xref:howto-create-msi-package#scenario-two)
-* [Scenario 3 - Manual Creation](xref:howto-create-msi-package#scenario-three)
-
-<ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="scenario-one-tab" data-bs-toggle="tab" href="#scenario-one" role="tab" aria-controls="scenario-one" aria-selected="true">VSCode</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="scenario-two-tab" data-bs-toggle="tab" href="#scenario-two" role="tab" aria-controls="scenario-two" aria-selected="false">PowerShell</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="scenario-three-tab" data-bs-toggle="tab" href="#scenario-three" role="tab" aria-controls="scenario-three" aria-selected="false">Manual</a>
-    </li>
-</ul>
-
-::::{.tab-content .text-bg-theme-elevation-1 .p-3 .mb-3 .border-start .border-end .border-bottom .rounded-bottom}
-:::{.tab-pane .fade .show .active #scenario-one role=tabpanel aria-labelledby=scenario-one-tab}
-
-#### Using VSCode
 
 There are [package templates](#package-template-placeholder) to create various package types, including an MSI template!
 
@@ -93,113 +70,6 @@ firefox-msi
 ```
 
 For this package, you can delete the `chocolateyBeforeModify.ps1`, `LICENSE.txt`, and `VERIFICATION.txt` files from the `tools` directory, and the `ReadMe.md` file from the root of `firefox-msi`.
-
-:::
-:::{.tab-pane .fade #scenario-two role=tabpanel aria-labelledby=scenario-two-tab}
-
-#### Using PowerShell
-
-There are [package templates](#package-template-placeholder) to create various package types, including an MSI template!
-
-We'll use this to create our new MSI package:
-
-```powershell
-# Change location to your tutorial folder
-Set-Location ~\tutorials
-
-# Install the MSI template - this step will need to be run with elevation!
-choco install msi.template --confirm --source Chocolatey
-
-# Create a new package source directory using the template
-choco new firefox-msi --template msi
-```
-
-This should result in a new directory, containing the following files:
-
-```text
-firefox-msi
-├── tools
-│   ├── chocolateyBeforeModify.ps1
-│   ├── chocolateyInstall.ps1
-│   ├── chocolateyUninstall.ps1
-│   ├── LICENSE.txt
-│   ├── VERIFICATION.txt
-├── firefox-msi.nuspec
-├── ReadMe.md
-```
-
-For this package, you can delete the `chocolateyBeforeModify.ps1`, `LICENSE.txt`, and `VERIFICATION.txt` files from the `tools` directory, and the `ReadMe.md` file from the root of `firefox-msi`.
-
-:::
-:::{.tab-pane .fade #scenario-three role=tabpanel aria-labelledby=scenario-three-tab}
-
-#### Manual Creation of an MSI Package
-
-1. Create a new directory to contain your package files. We normally name this the same as the package ID, e.g. `firefox-msi`.
-    a. Create a `firefox-msi.nuspec` file within the new directory. Set the contents, as shown [below](#nuspec-content).
-1. Create a `tools` directory within the `firefox-msi` directory.
-    a. Create a `chocolateyInstall.ps1` file within the `tools` directory. Set the contents, as shown [below](#chocolatey-install-base-content).
-
-##### Nuspec Content
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
-<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
-  <metadata>
-    <id>firefox-msi</id>
-    <version>$version$</version>
-    <!-- packageSourceUrl>http://github.com/__REPLACE_YOUR_REPO__/msi-package</packageSourceUrl -->
-    <owners>__REPLACE_YOUR_NAME__</owners>
-    <title>Firefox (Install)</title>
-    <authors>Mozilla Foundation</authors>
-    <projectUrl>https://www.mozilla.org/en-GB/firefox/</projectUrl>
-    <tags>firefox browser</tags>
-    <summary>Mozilla Firefox is a web-browser.</summary>
-    <!-- description>__REPLACE__MarkDown_Okay</description -->
-  </metadata>
-  <files>
-    <file src="tools\**" target="tools" />
-  </files>
-</package>
-```
-
-##### Chocolatey Install Base Content
-
-```PowerShell
-$ErrorActionPreference = 'Stop'
-
-$toolsDir   = Split-Path $MyInvocation.MyCommand.Definition -Parent
-
-$packageArgs = @{
-  packageName   = 'firefox-msi'
-  fileType      = 'MSI'
-  url           = '' # Download URL, HTTPS preferred
-  url64bit      = '' # 64bit URL here (HTTPS preferred) or remove - if installer contains both, just use $URL
-
-  checksum      = ''
-  checksumType  = 'sha256' #default is md5, can also be sha1, sha256 or sha512
-  checksum64    = ''
-  checksumType64= 'sha256'
-
-  silentArgs    = "/qn /norestart /l*v `"$($env:TEMP)\$($packageName).$($env:chocolateyPackageVersion).MsiInstall.log`""
-  validExitCodes= @(0, 3010, 1641)
-}
-
-Install-ChocolateyPackage @packageArgs
-```
-
-You should now have a directory with a file structure that looks like this:
-
-```text
-firefox-msi
-├── tools
-│   ├── chocolateyInstall.ps1
-├── firefox-msi.nuspec
-```
-
-:::
-::::
 
 You'll want to open the `firefox-msi.nuspec` file, and fill out the following fields in the `metadata` section if required:
 
@@ -294,7 +164,9 @@ You should have a new package generated in your current working directory.
 
 You can now test installation of your package!
 
-Personally, I like to test this in a Windows Sandbox environment, or the [Chocolatey Test Environment](https://github.com/chocolatey-community/chocolatey-test-environment) (particularly if you already have an installation of Firefox present) - but you can just use your machine, if you want. **Beware** that it may affect existing installations (as you're essentially testing in production).
+Personally, I like to test this in a Windows Sandbox environment, or the [Chocolatey Test Environment](https://github.com/chocolatey-community/chocolatey-test-environment) (particularly if you already have an installation of Firefox present) - but you can just use your machine, if you want.
+
+> :choco-warning: **Beware** that installing and uninstalling the example package may affect existing installations of Firefox (as you're essentially testing in production).
 
 Launch an elevated terminal on your test environment, either using PowerShell or `cmd`. In the new window, run something like the following:
 
