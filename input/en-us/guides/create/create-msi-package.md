@@ -1,13 +1,13 @@
 ---
 Order: 2
 xref: howto-create-msi-package
-Title: How to Create an MSI Installer Package
+Title: How To Create an MSI Installer Package
 Description: Creating a package that installs an MSI
 ---
 
-When starting out with Chocolatey, why not start simple? Installing an MSI is a popular use of a Chocolatey package, and we'll walk you through how to do just that - assuming you've already run through [Preparing Your Environment for Package Creation](#package-creation-env-placeholder).
+When starting out with Chocolatey, why not start simple? Installing an MSI is a popular use of a Chocolatey package, and we'll walk you through how to do just that - assuming you've already run through [Preparing Your Environment for Package Creation](#xref:howto-prepare-env).
 
-### What is an MSI
+### What Is an MSI
 
 MSI files are a standardised installer filetype, used by Windows. Unlike EXE installers (which can and will do just about anything), MSIs have _standards_ (or at least they all use the Windows Installer under the hood) and will behave somewhat predictably.
 
@@ -43,11 +43,11 @@ In this example, we're going to be creating a new Firefox MSI package.
 > :choco-info: For the purposes of the example, we'll provide URLs that work at time of writing. If you were creating a package from scratch, you would want to find the URLs for the installers yourself.
 > In this case, we browsed to [Mozilla's download site](https://www.mozilla.org/en-GB/firefox/all/#product-desktop-release) and grabbed the URL of the MSI(s) we wanted.
 
-There are [package templates](#package-template-placeholder) to create various package types, including an MSI template!
+There are [package templates](#xref:create-custom-package-templates) to create various package types, including an MSI template!
 
 We'll use this to create our new MSI package:
 
-1. Open your tutorials folder in VSCode.
+1. Open your `Tutorials` folder in VSCode.
 1. Press `Ctrl + Shift + P` (or select `View > Command Palette`).
 1. Select `Chocolatey: Install Template Package(s)`.
 1. Open the `Command Palette` again, as in the prior step.
@@ -83,9 +83,33 @@ You'll want to open the `firefox-msi.nuspec` file, and fill out the following fi
 
 You can now fill or remove any other commented out sections of the nuspec file, if you want.
 
-#### Creating your Install Script
+Your final content should look like this:
 
-So, you already have a `chocolateyInstall.ps1` script present in your tools directory! However, it's been generated from a template - so will be missing a few details!
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>firefox-msi</id>
+    <version>120.0.1</version>
+    <owners>PackageMaintainer</owners>
+    <title>Mozilla Firefox (Install)</title>
+    <authors>Mozilla Foundation</authors>
+    <projectUrl>https://www.mozilla.org/en-GB/firefox/</projectUrl>
+    <tags>browser mozilla firefox oss</tags>
+    <summary>Mozilla Firefox is a web-browser.</summary>
+    <!-- description>More detail</description -->
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
+
+```
+
+#### Creating Your Install Script
+
+So, you already have a `chocolateyInstall.ps1` script present in your `tools` directory! However, it's been generated from a template - so will be missing a few details!
 
 As mentioned above, we're going to be using [Mozilla Firefox](https://www.mozilla.org/en-GB/firefox/) for our example package. You can use the following values in the upcoming steps - or, find them yourself:
 
@@ -137,7 +161,7 @@ $packageArgs = @{
 Install-ChocolateyPackage @packageArgs
 ```
 
-You could inject additional configuration after the initial installation, if you wanted - or have this package simply install the software, and have a separate package for [applying configuration](#placeholder-config-package)!
+You could add additional configuration after the initial installation, if you wanted - or have this package simply install the software, and have a separate package for applying configuration!
 
 #### Considering Uninstallation
 
@@ -156,7 +180,7 @@ You can now use `choco pack` to compile your Chocolatey package into a nupkg fil
 1. In VSCode, press `Ctrl + Shift + P` or use the `View` menu and click on `Command Palette`.
 1. Select `Chocolatey: Package Chocolatey package(s)` from the prompt.
 1. Select `firefox-msi.nuspec` from the prompt.
-1. Press Enter, providing no additional input.
+1. In the `additional arguments` dialog enter `--output-directory='~\tutorials'` (or whichever directory you're using for these tutorials), and press Enter.
 
 You should have a new package generated in your current working directory.
 
