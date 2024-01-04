@@ -161,6 +161,7 @@ Some environment variables are set based on options that are passed, configurati
  * ChocolateyPackageParametersSensitive - Package parameters passed from command line `--package-parameters-sensitive` that are not logged anywhere.
  * ChocolateyLicensedVersion - What version is the licensed edition on?
  * ChocolateyLicenseType - What edition / type of the licensed edition is installed?
+ * USER_CONTEXT - The original user context - different when self-service is used (Licensed)
 
 #### Experimental Environment Variables
 
